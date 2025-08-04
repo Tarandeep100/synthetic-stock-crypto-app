@@ -19,13 +19,19 @@ export function usePrices(tokens: (Token | null)[]) {
               const data = await stockApi.getPrice(token.symbol);
               return { symbol: token.symbol, price: parseFloat(data.price) };
             } catch (error) {
-              console.error(`Failed to fetch price for ${token.symbol}:`, error);
               return { symbol: token.symbol, price: 0 };
             }
           } else {
-            // For crypto, we would need the token address
-            // For now, return mock price
-            return { symbol: token.symbol, price: token.symbol === 'USDC' ? 1 : 2000 };
+            try {
+              // For crypto tokens, fetch from crypto API
+              const data = await cryptoApi.getPrice('1', token.address || '');
+              
+              const priceData = data.data?.[0];
+              const price = priceData ? parseFloat(priceData.price) : 0;
+              return { symbol: token.symbol, price };
+            } catch (error) {
+              return { symbol: token.symbol, price: 0 };
+            }
           }
         });
 
@@ -37,7 +43,7 @@ export function usePrices(tokens: (Token | null)[]) {
 
         setPrices(newPrices);
       } catch (error) {
-        console.error('Failed to fetch prices:', error);
+        // Silently handle errors, individual token errors are already handled above
       } finally {
         setLoading(false);
       }

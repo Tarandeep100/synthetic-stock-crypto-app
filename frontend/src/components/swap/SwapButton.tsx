@@ -27,7 +27,7 @@ export default function SwapButton({
         onClick={() => connect({ connector: connectors[0] })}
         className="w-full py-4 mt-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded-2xl font-semibold text-white transition-colors"
       >
-        Connect Wallet
+        Connect Wallet!
       </button>
     );
   }

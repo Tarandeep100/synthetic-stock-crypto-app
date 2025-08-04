@@ -68,8 +68,10 @@ export function useSwap() {
         };
       }
     } catch (error) {
-      console.error('Failed to get quote:', error);
-      throw error;
+      setQuote(null);
+      return null;
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -139,8 +141,7 @@ export function useSwap() {
         toast.success('Swap completed successfully!', { id: toastId });
       }
     } catch (error) {
-      console.error('Swap failed:', error);
-      toast.error('Swap failed. Please try again.', { id: toastId });
+      throw error;
     } finally {
       setLoading(false);
     }

@@ -1,28 +1,26 @@
 ﻿'use client';
 
 import SwapInterface from '@/components/swap/SwapInterface';
+import Header from '@/components/layout/Header';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <header className="border-b border-gray-700">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
-              </div>
-              <span className="text-xl font-bold text-white">StockSwap</span>
-            </div>
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">
+      <Header />
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-lg mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white mb-4">
+              Stock<span className="text-blue-400">Swap</span>
+            </h1>
+            <p className="text-gray-300">
+              Trade crypto and tokenized stocks seamlessly on Solana
+            </p>
           </div>
-        </div>
-      </header>
-      
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto">
+          
           <SwapInterface />
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

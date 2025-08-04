@@ -39,9 +39,10 @@ export function useSwapQuote() {
         const stockAmount = usdtValue / parseFloat(stockPrice.price);
 
         const quote: SwapQuote = {
+          fromToken,
+          toToken,
           fromAmount: amount,
           toAmount: stockAmount.toFixed(6),
-          price: parseFloat(stockPrice.price),
           priceImpact: '0.1',
           route: [fromToken.symbol, 'USDT', toToken.symbol]
         };
@@ -67,9 +68,10 @@ export function useSwapQuote() {
         const cryptoValue = parseFloat(cryptoAmount) / 10 ** (toToken.decimals || 18);
 
         const quote: SwapQuote = {
+          fromToken,
+          toToken,
           fromAmount: amount,
           toAmount: cryptoValue.toFixed(6),
-          price: usdtValue / cryptoValue,
           priceImpact: '0.1',
           route: [fromToken.symbol, 'USDT', toToken.symbol]
         };
@@ -78,7 +80,6 @@ export function useSwapQuote() {
         return quote;
       }
     } catch (error) {
-      console.error('Failed to get quote:', error);
       setQuote(null);
       return null;
     } finally {

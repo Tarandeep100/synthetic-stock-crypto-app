@@ -1,116 +1,131 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Token } from '@/types';
 import { apiClient } from '@/lib/api-client';
 
-// Popular tokens and stocks for demo
-const POPULAR_CRYPTO: Token[] = [
-  {
-    symbol: 'ETH',
-    name: 'Ethereum',
-    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    decimals: 18,
-    chainId: 1
-  },
-  {
-    symbol: 'USDC',
-    name: 'USD Coin',
-    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    decimals: 6,
-    chainId: 1
-  },
-  {
-    symbol: 'WBTC',
-    name: 'Wrapped Bitcoin',
-    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    decimals: 8,
-    chainId: 1
-  },
-  {
-    symbol: 'DAI',
-    name: 'Dai Stablecoin',
-    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    decimals: 18,
-    chainId: 1
-  },
-  {
-    symbol: 'LINK',
-    name: 'Chainlink',
-    address: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
-    decimals: 18,
-    chainId: 1
-  }
-];
+interface OKXToken {
+  chainId: string;
+  tokenContractAddress: string;
+  tokenSymbol: string;
+  tokenName: string;
+  tokenLogoUrl?: string;
+  decimals: string;
+}
 
-const POPULAR_STOCKS: Token[] = [
-  {
-    symbol: 'AAPL',
-    name: 'Apple Inc.',
-    decimals: 2
-  },
-  {
-    symbol: 'GOOGL',
-    name: 'Alphabet Inc.',
-    decimals: 2
-  },
-  {
-    symbol: 'MSFT',
-    name: 'Microsoft Corporation',
-    decimals: 2
-  },
-  {
-    symbol: 'AMZN',
-    name: 'Amazon.com Inc.',
-    decimals: 2
-  },
-  {
-    symbol: 'TSLA',
-    name: 'Tesla Inc.',
-    decimals: 2
-  },
-  {
-    symbol: 'META',
-    name: 'Meta Platforms Inc.',
-    decimals: 2
-  },
-  {
-    symbol: 'NVDA',
-    name: 'NVIDIA Corporation',
-    decimals: 2
-  },
-  {
-    symbol: 'SPY',
-    name: 'SPDR S&P 500 ETF',
-    decimals: 2
+interface OKXTokenResponse {
+  code: string;
+  msg: string;
+  data: OKXToken[];
+}
+
+// Global cache and request deduplication
+const tokenCache = new Map<string, { tokens: Token[]; timestamp: number }>();
+const activeRequests = new Map<string, Promise<Token[]>>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+async function fetchCryptoTokens(): Promise<Token[]> {
+  const cacheKey = 'crypto-tokens-1';
+  const now = Date.now();
+  
+  // Check cache first
+  const cached = tokenCache.get(cacheKey);
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.tokens;
   }
-];
+  
+  // Check if there's already an active request
+  const activeRequest = activeRequests.get(cacheKey);
+  if (activeRequest) {
+    return activeRequest;
+  }
+  
+  // Create new request with deduplication
+  const requestPromise = (async () => {
+    try {
+      const response = await apiClient.get('/api/crypto/tokens', {
+        params: { chainId: '1' }
+      });
+      
+      const data: OKXTokenResponse = response.data;
+      
+      if (data.code === '0' && data.data) {
+        const cryptoTokens: Token[] = data.data
+          .slice(0, 20) // Limit to first 20 popular tokens
+          .map((token: OKXToken) => ({
+            symbol: token.tokenSymbol,
+            name: token.tokenName,
+            type: 'crypto' as const,
+            address: token.tokenContractAddress,
+            decimals: parseInt(token.decimals),
+          }));
+        
+        // Cache the result
+        tokenCache.set(cacheKey, { tokens: cryptoTokens, timestamp: now });
+        
+        return cryptoTokens;
+      } else {
+        throw new Error('Invalid response from crypto API');
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      // Remove from active requests
+      activeRequests.delete(cacheKey);
+    }
+  })();
+  
+  // Store the promise to prevent duplicate requests
+  activeRequests.set(cacheKey, requestPromise);
+  
+  return requestPromise;
+}
 
 export function useTokenList(tokenType: 'crypto' | 'stock') {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchTokens = async () => {
+      if (!isMountedRef.current) return;
+      
       try {
+        setLoading(true);
+        setError(null);
+
         if (tokenType === 'crypto') {
-          // For demo, use popular tokens
-          // In production, fetch from API
-          setTokens(POPULAR_CRYPTO);
+          const cryptoTokens = await fetchCryptoTokens();
+          if (isMountedRef.current) {
+            setTokens(cryptoTokens);
+          }
         } else {
-          // For demo, use popular stocks
-          // In production, fetch from API
-          setTokens(POPULAR_STOCKS);
+          // For stocks, return empty array since stocks are handled by useStockList
+          if (isMountedRef.current) {
+            setTokens([]);
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch tokens:', error);
-        // Fallback to hardcoded lists
-        setTokens(tokenType === 'crypto' ? POPULAR_CRYPTO : POPULAR_STOCKS);
+        if (isMountedRef.current) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to fetch tokens';
+          setError(errorMessage);
+          setTokens([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTokens();
   }, [tokenType]);
 
-  return { tokens, loading };
+  return { tokens, loading, error };
 }

@@ -1,30 +1,41 @@
 [package]
-name = "synthetic-stock-crypto-app"
+name = "stock-crypto-backend"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-# Web framework
 actix-web = "4.4"
-
-# HTTP client
-reqwest = { version = "0.11", features = ["json"] }
-
-# Serialization
+actix-cors = "0.7"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_urlencoded = "0.7"
-
-# Date and time
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1.0", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
-
-# Cryptography for API signing
+env_logger = "0.10"
 hmac = "0.12"
 sha2 = "0.10"
 base64 = "0.21"
+dotenv = "0.15"
 
-# Logging
-env_logger = "0.10"
+# Solana dependencies for smart contract integration (optional)
+anchor-client = { version = "0.29", optional = true }
+anchor-lang = { version = "0.29", optional = true }
+solana-client = { version = "1.17", optional = true }
+solana-sdk = { version = "1.17", optional = true }
+tokio-tungstenite = { version = "0.20", optional = true }
+futures-util = { version = "0.3", optional = true }
+
+[features]
+default = []
+solana = [
+    "anchor-client",
+    "anchor-lang", 
+    "solana-client",
+    "solana-sdk",
+    "tokio-tungstenite",
+    "futures-util"
+]
 
 [dev-dependencies]
 actix-rt = "2.9"
