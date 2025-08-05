@@ -7,6 +7,10 @@ export interface Token {
   tradable?: boolean; // For stock tokens
   fractionable?: boolean; // For stock tokens
   exchange?: string; // For stock tokens
+  volume?: number; // Trading volume
+  price?: number; // Current price
+  change?: number; // Price change
+  change_percent?: number; // Price change percentage
 }
 
 export type SwapType = 'crypto-to-stock' | 'stock-to-crypto';

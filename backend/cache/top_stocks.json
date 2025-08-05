@@ -1,0 +1,114 @@
+{
+  "data": {
+    "cache_duration_hours": 24,
+    "gainers": [],
+    "losers": [],
+    "most_active": {
+      "last_updated": "2025-08-04T23:59:00.098826586Z",
+      "most_actives": [
+        {
+          "symbol": "OPEN",
+          "trade_count": 290433,
+          "volume": 275214968
+        },
+        {
+          "symbol": "ATCH",
+          "trade_count": 195176,
+          "volume": 221888860
+        },
+        {
+          "symbol": "RAYA",
+          "trade_count": 53124,
+          "volume": 152300989
+        },
+        {
+          "symbol": "IXHL",
+          "trade_count": 145069,
+          "volume": 149174373
+        },
+        {
+          "symbol": "NVDA",
+          "trade_count": 1439228,
+          "volume": 148375600
+        },
+        {
+          "symbol": "SOXS",
+          "trade_count": 115353,
+          "volume": 133418021
+        },
+        {
+          "symbol": "TSLL",
+          "trade_count": 265034,
+          "volume": 132464489
+        },
+        {
+          "symbol": "BTBD",
+          "trade_count": 746495,
+          "volume": 127859643
+        },
+        {
+          "symbol": "NCNA",
+          "trade_count": 27188,
+          "volume": 126642973
+        },
+        {
+          "symbol": "SQQQ",
+          "trade_count": 161446,
+          "volume": 116768826
+        },
+        {
+          "symbol": "TSLZ",
+          "trade_count": 25578,
+          "volume": 106836869
+        },
+        {
+          "symbol": "NIO",
+          "trade_count": 130787,
+          "volume": 92175364
+        },
+        {
+          "symbol": "BBAI",
+          "trade_count": 166307,
+          "volume": 89138721
+        },
+        {
+          "symbol": "SOXL",
+          "trade_count": 469978,
+          "volume": 85960644
+        },
+        {
+          "symbol": "ADAP",
+          "trade_count": 33049,
+          "volume": 83891426
+        },
+        {
+          "symbol": "PLTR",
+          "trade_count": 968522,
+          "volume": 82931743
+        },
+        {
+          "symbol": "BTAI",
+          "trade_count": 307336,
+          "volume": 82657864
+        },
+        {
+          "symbol": "JOBY",
+          "trade_count": 395393,
+          "volume": 81112326
+        },
+        {
+          "symbol": "TSLA",
+          "trade_count": 1122335,
+          "volume": 78678681
+        },
+        {
+          "symbol": "AMZN",
+          "trade_count": 1046453,
+          "volume": 77887389
+        }
+      ]
+    },
+    "updated_at": 1754362546
+  },
+  "timestamp": 1754362546
+}
